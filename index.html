@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>原立刷App用户公众号快捷注册电签 · 原型</title>
+<style>
+  :root{
+    --bg:#f2f3f5; --line:#e5e6eb; --text:#1d2129; --sub:#86909c;
+    --blue:#1677ff; --red:#f53f3f; --orange:#ff7d00; --green:#00b42a;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);
+    font:14px/1.6 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}
+  header{background:#fff;border-bottom:1px solid var(--line);padding:16px 24px}
+  header h1{margin:0 0 4px;font-size:18px}
+  header p{margin:0;color:var(--sub);font-size:13px}
+
+  .tabs{display:flex;gap:18px;padding:12px 24px 0;flex-wrap:wrap;align-items:center}
+  .tgrp{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+  .tgrp .gl{font-size:12.5px;font-weight:600;margin-right:2px}
+  .tgrp.new .gl{color:var(--red)} .tgrp.mod .gl{color:var(--orange)}
+  .tab{padding:6px 14px;border:1px solid var(--line);background:#fff;border-radius:6px;
+    cursor:pointer;font-size:13px;color:#4e5969}
+  .tgrp.new .tab{border-color:#ffccc7} .tgrp.mod .tab{border-color:#ffd8a8}
+  .tgrp.new .tab.on{background:var(--red);border-color:var(--red);color:#fff}
+  .tgrp.mod .tab.on{background:var(--orange);border-color:var(--orange);color:#fff}
+
+  .statebar{margin:14px 24px 0;background:#fff;border:1px solid var(--line);
+    border-radius:10px;padding:10px 14px}
+  .sbrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:3px 0}
+  .sbrow .lbl{font-size:13px;font-weight:600;width:72px}
+  .seg{border:1px solid var(--line);background:#fff;color:#4e5969;border-radius:16px;
+    padding:4px 13px;font-size:12.5px;cursor:pointer}
+  .seg:hover{border-color:var(--blue)}
+  .seg.on{background:var(--blue);border-color:var(--blue);color:#fff}
+
+  .wrap{display:flex;gap:20px;padding:14px 24px 48px;align-items:flex-start;flex-wrap:wrap}
+  .stage{flex:0 0 auto;width:340px}
+  .panel{flex:1;min-width:420px}
+
+  .phone{position:relative;width:340px;background:#fff;border:1px solid var(--line);border-radius:20px;
+    overflow:hidden;box-shadow:0 6px 24px rgba(0,0,0,.08)}
+  .nav{height:46px;display:flex;align-items:center;justify-content:center;position:relative;
+    border-bottom:1px solid var(--line);font-weight:600;font-size:15px;background:#fff}
+  .nav .lbtns{position:absolute;left:12px;display:flex;gap:12px}
+  .nav .lbtns b{font-weight:400;color:#4e5969;cursor:pointer;font-size:17px;line-height:1;
+    padding:3px 6px;border-radius:4px}
+  .nav .lbtns b:hover{background:#f2f3f5}
+  .nav .lbtns b.off{color:#c9cdd4;cursor:not-allowed}
+  .nav small{position:absolute;top:27px;left:0;right:0;text-align:center;
+    color:var(--sub);font-weight:400;font-size:10px}
+  .screen{height:580px;overflow-y:auto;background:var(--bg);padding-bottom:120px}
+
+  .grp{margin:10px 0 0}
+  .grp h4{margin:0;padding:10px 14px 6px;font-size:13px;font-weight:600;
+    display:flex;align-items:center;gap:6px}
+  .grp h4::before{content:"";width:3px;height:13px;background:var(--blue);border-radius:2px}
+  .list{background:#fff}
+  .row{display:flex;justify-content:space-between;gap:10px;padding:12px 14px;
+    border-bottom:1px solid #f2f3f5;font-size:13px;align-items:center}
+  .row:last-child{border-bottom:0}
+  .row b{font-weight:400;white-space:nowrap}
+  .row span{color:var(--sub);text-align:right}
+  .row .v{color:var(--text)}
+  .row .bad{color:var(--red)}
+  .row input{border:0;outline:0;text-align:right;font-size:13px;flex:1;min-width:0;background:transparent}
+  .btnbar{position:absolute;bottom:0;left:0;right:0;padding:10px 14px 8px;background:#fff;border-top:1px solid var(--line)}
+  .btnflow{padding:20px 14px 24px;margin-bottom:-120px}
+  .btn{width:100%;border:0;background:var(--blue);color:#fff;border-radius:22px;
+    padding:11px 0;font-size:15px;cursor:pointer}
+  .agree{font-size:11px;color:var(--sub);text-align:center;margin-top:6px}
+  .links{font-size:12.5px;color:var(--sub);text-align:center;margin-top:4px}
+  .links a{color:var(--blue);cursor:pointer;text-decoration:none}
+  .newmark{outline:2px dashed var(--red);outline-offset:2px;border-radius:4px}
+
+  .errbar{background:#ffece8;color:var(--red);padding:9px 14px;font-size:12.5px}
+  .errtxt{color:var(--red);font-size:12px;padding:0 14px 8px;background:#fff}
+  .infobar{background:#e8f3ff;color:var(--blue);padding:8px 14px;font-size:11.5px}
+  .topnotice{position:sticky;top:0;z-index:5;display:flex;justify-content:space-between;align-items:center;
+    background:#e8f3ff;color:var(--blue);padding:10px 14px;font-size:13px;cursor:pointer}
+  .topnotice.newmark{outline-offset:-3px}
+  .toast{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);
+    background:rgba(0,0,0,.8);color:#fff;padding:12px 18px;border-radius:8px;
+    font-size:13px;max-width:255px;text-align:center;z-index:9;line-height:1.5}
+  .pics{display:flex;gap:10px;padding:12px 14px;background:#fff}
+  .pic{flex:1;height:84px;border:1px dashed #c9cdd4;border-radius:6px;background:#f7f8fa;
+    display:flex;align-items:center;justify-content:center;color:#86909c;font-size:11px;
+    text-align:center;cursor:pointer;line-height:1.5}
+  .pic:hover{border-color:var(--blue);color:var(--blue)}
+  .pic.ok{border-style:solid;border-color:#b7eb8f;background:#f6ffed;color:var(--green)}
+  .cardpic{margin:0;padding:12px 14px 8px;background:#fff}
+  .cardpic .pic{width:150px;flex:none}
+
+  .login{min-height:580px;margin-bottom:-120px;padding:22px 22px 0;text-align:center;position:relative;
+    background:linear-gradient(170deg,#e9f2ff 0%,#f4f8ff 45%,#f7faff 100%)}
+  .hero{display:block;margin:0 auto}
+  .brand{display:flex;align-items:center;justify-content:center;gap:6px;color:#1677ff;font-size:19px;font-weight:600;margin:6px 0 30px}
+  .login .btn{padding:12px 0;font-size:15px;background:#1677ff}
+  .lagree{display:flex;align-items:center;justify-content:center;gap:4px;margin-bottom:8px;font-size:9.5px;color:#4e5969;white-space:nowrap}
+  .lagree i{width:12px;height:12px;border-radius:50%;background:#c9cdd4;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto}
+  .lagree a{color:#1677ff}
+  .quick .arr{font-weight:400;font-size:16px;line-height:1}
+  .quick{display:inline-flex;align-items:center;gap:3px;margin-top:10px;font-size:13px;color:#1677ff;cursor:pointer;padding:2px 6px}
+  .icons{display:flex;justify-content:space-around;margin-top:30px;font-size:13px;color:#1677ff}
+  .icons div{display:flex;flex-direction:column;align-items:center;gap:8px}
+  .icons span{width:40px;height:40px;border-radius:50%;background:#1677ff;display:flex;align-items:center;justify-content:center}
+  .modfield{background:#fff3e8}
+  .acard{background:#fff;margin:12px;border-radius:10px}
+  .acard .row{padding:15px 14px}
+  .anote{display:flex;align-items:center;gap:5px;margin-top:8px;font-size:11px;color:#4e5969}
+  .anote i{width:12px;height:13px;background:#00b42a;border-radius:2px 2px 6px 6px;flex:0 0 auto}
+  .mask{position:absolute;inset:0;background:rgba(0,0,0,.45);display:flex;justify-content:center;z-index:9}
+  .mask.center{align-items:center}
+  .lagree i{cursor:pointer}
+  .lagree i.on{background:#1677ff}
+  .dlg{width:262px;background:#fff;border-radius:12px;overflow:hidden;text-align:center}
+  .dlg h5{margin:0;padding:18px 0 6px;font-size:16px}
+  .dlg p{margin:0;padding:4px 20px 18px;font-size:14px;line-height:1.6;color:#1d2129}
+  .dlg p a{color:#1677ff}
+  .dlg .acts{display:flex;border-top:1px solid var(--line)}
+  .dlg .acts button{flex:1;border:0;background:#fff;padding:12px 0;font-size:15px;cursor:pointer;color:#1d2129}
+  .dlg .acts button+button{border-left:1px solid var(--line);color:#1677ff}
+  .sheet{width:100%;background:#fff;border-radius:12px 12px 0 0;overflow:hidden}
+  .sheet div{text-align:center;padding:13px 0;border-bottom:1px solid #f2f3f5;font-size:14px;cursor:pointer}
+  .sheet div.gap{border-top:6px solid #f2f3f5}
+  .lfoot{position:absolute;left:0;right:0;bottom:14px}
+  .ipv6{font-size:11px;color:#86909c}
+  .ipv6 b{font-weight:400;color:#4e7bd8;border:1px solid #9db8ec;border-radius:2px;padding:0 3px;margin-left:4px}
+  .holder{padding:150px 24px;text-align:center;font-size:15px;color:var(--sub)}
+
+  .card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin-bottom:16px}
+  .card h3{margin:0 0 4px;font-size:15px}
+  .card .path{color:var(--sub);font-size:12.5px;margin:0 0 12px;
+    background:#f7f8fa;border-radius:5px;padding:6px 9px;word-break:break-all}
+  .legend{background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 16px;margin-bottom:16px;font-size:13px}
+  .legend em{display:inline-block;width:26px;height:14px;background:#fff3e8;border:1px solid #ffd8a8;vertical-align:-2px;margin:0 6px 0 14px;border-radius:2px}
+  .legend i{display:inline-block;width:26px;height:14px;outline:2px dashed var(--red);vertical-align:-2px;margin:0 6px 0 4px;border-radius:2px}
+  table{width:100%;border-collapse:collapse;font-size:12.5px}
+  th,td{border:1px solid var(--line);padding:7px 9px;text-align:left;vertical-align:top}
+  th{background:#f7f8fa;font-weight:600;white-space:nowrap}
+  .pcard{display:none}
+  .pcard.on{display:block}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>原立刷App用户公众号快捷注册电签 · 交互原型</h1>
+  <p>V0.8 ｜ 2026/10/26</p>
+</header>
+
+<div class="tabs">
+  <div class="tgrp mod"><span class="gl">现有页面改动 3 个</span>
+    <div class="tab" data-p="login">登录页</div>
+    <div class="tab" data-p="register">注册页</div>
+    <div class="tab" data-p="partner">合伙人App－存量用户快捷进件</div>
+  </div>
+  <div class="tgrp new"><span class="gl">新增页面 3 个</span>
+    <div class="tab" data-p="verify">快捷注册－账号验证</div>
+    <div class="tab" data-p="idconfirm">快捷注册－身份信息确认</div>
+    <div class="tab" data-p="cardconfirm">快捷注册－入网信息确认</div>
+  </div>
+</div>
+
+<div class="statebar">
+  <div class="sbrow" id="sb-acct"><span class="lbl">账号验证</span></div>
+  <div class="sbrow" id="sb-data"><span class="lbl">原立刷资料</span></div>
+</div>
+
+<div class="wrap">
+  <div class="stage">
+    <div class="phone">
+      <div class="nav" id="nav"></div>
+      <div class="screen" id="sc"></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="legend"><b>图例</b><i></i>红色虚线框 = 现有页面上新增的入口<em></em>橙底 = 现有页面上调整的字段；新增页面整页不标色</div>
+
+    <div class="card pcard" data-p="login">
+      <h3>登录页：新增【原立刷App用户快捷注册】入口</h3>
+      <p class="path">关注「立刷电签版」公众号 → 进入登录页</p>
+      <table>
+        <tr><th>调整内容</th><th>说明</th></tr>
+        <tr><td>【原立刷App用户快捷注册】</td><td>位于【微信注册/登录】按钮下方，文字后带右箭头「›」；点击进入「快捷注册－账号验证」页</td></tr>
+        <tr><td>未勾选协议时点击入口</td><td>弹出协议确认弹窗，与【微信注册/登录】现有弹窗相同；【同意并继续】自动勾选并进入账号验证页，【取消】关闭弹窗停留本页</td></tr>
+        <tr><td>协议勾选行</td><td>由【微信注册/登录】按钮下方移到页面底部「网站支持 IPv6」上方</td></tr>
+      </table>
+    </div>
+
+    <div class="card pcard" data-p="register">
+      <h3>注册页：新增【原立刷App用户快捷注册】入口</h3>
+      <p class="path">登录页【微信注册/登录】→ 注册页（首次注册）</p>
+      <table>
+        <tr><th>调整内容</th><th>说明</th></tr>
+        <tr><td>【原立刷App用户快捷注册】</td><td>页面顶部置顶提示条，不随页面滚动；整条可点击，进入「快捷注册－账号验证」页</td></tr>
+      </table>
+    </div>
+
+    <div class="card pcard" data-p="partner">
+      <h3>合伙人App存量用户快捷进件：身份证号由后6位改为后4位</h3>
+      <p class="path">嘉联合伙人App → 首页 → 立刷进件 →【存量用户快捷进件】</p>
+      <table>
+        <tr><th>调整内容</th><th>说明</th></tr>
+        <tr><td>身份证号（原账户类型「立刷App」）</td><td>输入框提示由「请输入身份证号后6位」改为「请输入身份证号后4位」；手机号与后4位同时匹配才通过，其它判定、提示与后续流程不变</td></tr>
+        <tr><td>原账户类型「立刷电签」</td><td>不改，仍输入完整身份证号</td></tr>
+      </table>
+    </div>
+
+    <div class="card pcard" data-p="verify">
+      <h3>快捷注册－账号验证（新增页）</h3>
+      <p class="path">登录页或注册页【原立刷App用户快捷注册】→ 本页</p>
+      <table>
+        <tr><th>项</th><th>说明</th></tr>
+        <tr><td>输入项</td><td>1、原立刷App注册手机号<br>2、身份证号后4位（合伙人App仍为后6位，不改）</td></tr>
+        <tr><td>【下一步】判定</td><td>1、手机号不存在 → 提示「账号不存在」，可返回注册页<br>2、手机号存在、后4位不符 → 提示「身份证验证有误」<br>3、该身份证已注册电签 → 与合伙人App现有逻辑相同<br>4、通过且有原立刷资料 → 身份信息确认页<br>5、通过但无原立刷资料 → 提示「未查到原立刷app资料，请用其他方式注册」，停留本页</td></tr>
+        <tr><td>数据范围</td><td>未同步到当前系统的原立刷商户也要能查到并走快捷注册</td></tr>
+      </table>
+    </div>
+
+    <div class="card pcard" data-p="idconfirm">
+      <h3>快捷注册－身份信息确认（新增页）</h3>
+      <p class="path">账号验证通过 → 本页</p>
+      <table>
+        <tr><th>项</th><th>说明</th></tr>
+        <tr><td>身份证照片</td><td>不反显原图，人像面／国徽面都用占位图；可点击重新上传</td></tr>
+        <tr><td>姓名、身份证号</td><td>脱敏展示</td></tr>
+        <tr><td>身份证有效期</td><td>已过期 → 顶部提示并要求重新上传身份证，未重新上传不能进入下一步</td></tr>
+      </table>
+    </div>
+
+    <div class="card pcard" data-p="cardconfirm">
+      <h3>快捷注册－入网信息确认（新增页）</h3>
+      <p class="path">身份信息确认【下一步】→ 本页 →【确认继续】→ 门店认证（与原有逻辑相同）</p>
+      <table>
+        <tr><th>项</th><th>说明</th></tr>
+        <tr><td>结算卡照片</td><td>1、不反显原图，用占位图<br>2、原立刷结算卡照片重新识别一次：不通过 → 照片下红字提示，商户重新上传<br>3、系统中没有结算卡照片 → 不反显卡号，商户上传后识别</td></tr>
+        <tr><td>开户名称、结算卡号</td><td>脱敏展示</td></tr>
+        <tr><td>入网地址</td><td>按当前定位展示，可修改，与原有选点逻辑相同</td></tr>
+        <tr><td>后续认证</td><td>原立刷做过人脸的，意愿确认与人脸整步跳过；原立刷有信用卡记录的，信用卡认证跳过</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+var ACCT = [
+  { v:'ok',   name:'通过' },
+  { v:'none', name:'手机号不存在' },
+  { v:'bad',  name:'后4位不符' },
+  { v:'ds',   name:'已注册电签' }
+];
+var DATA = [
+  { v:'full',    name:'资料齐全' },
+  { v:'idexp',   name:'身份证已过期' },
+  { v:'cardbad', name:'结算卡识别不通过' },
+  { v:'nocard',  name:'无结算卡照片' },
+  { v:'nodata',  name:'无原立刷资料' }
+];
+var PATHS = {
+  login:['login'],
+  register:['login','register'],
+  partner:['partner'],
+  verify:['login','verify'],
+  idconfirm:['login','verify','idconfirm'],
+  cardconfirm:['login','verify','idconfirm','cardconfirm']
+};
+var S = { stack:['login'], acct:'ok', data:'full', idFixed:false, cardFixed:false, ptype:'app', agreed:false };
+
+function segs(id, list, key){
+  var el = document.getElementById(id), h = el.querySelector('.lbl').outerHTML;
+  for (var i=0;i<list.length;i++)
+    h += '<button class="seg' + (S[key]===list[i].v?' on':'') + '" onclick="setState(\'' + key + '\',\'' + list[i].v + '\')">' + list[i].name + '</button>';
+  el.innerHTML = h;
+}
+function renderBars(){ segs('sb-acct', ACCT, 'acct'); segs('sb-data', DATA, 'data'); }
+function setState(k, v){ S[k] = v; S.idFixed = false; S.cardFixed = false; renderBars(); render(); }
+
+function cur(){ return S.stack[S.stack.length-1]; }
+
+var P = {
+  login: { title:'登录', sub:'', body:function(){
+    return '<div class="login"><svg class="hero" width="190" height="150" viewBox="0 0 190 150"><defs><linearGradient id="rg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8fc4ff"/><stop offset="1" stop-color="#2f7bff"/></linearGradient></defs><rect x="40" y="38" width="118" height="98" rx="22" fill="#e3edff" transform="rotate(-12 99 87)"/><rect x="36" y="22" width="118" height="98" rx="22" fill="#f4f8ff" stroke="#ffffff" stroke-width="2" transform="rotate(-12 95 71)"/><circle cx="92" cy="74" r="32" fill="none" stroke="url(#rg)" stroke-width="11" stroke-dasharray="170 40" transform="rotate(30 92 74)"/><g transform="rotate(-18 112 60)"><rect x="90" y="44" width="48" height="32" rx="5" fill="#4b8eff"/><rect x="90" y="52" width="48" height="5" fill="#2f6fe6"/><rect x="122" y="63" width="10" height="4" rx="1" fill="#cfe2ff"/></g></svg><div class="brand"><svg width="22" height="22" viewBox="0 0 22 22"><circle cx="11" cy="11" r="8" fill="none" stroke="#1677ff" stroke-width="3" stroke-dasharray="38 12"/><rect x="9" y="7" width="10" height="7" rx="1.5" fill="#4b8eff" transform="rotate(-15 14 10)"/></svg>立刷电签版</div>' +
+      '<button class="btn" onclick="needAgree(\'register\')">微信注册/登录</button>' +
+      '<div><span class="quick newmark" onclick="needAgree(\'verify\')">原立刷App用户快捷注册<b class="arr">›</b></span></div>' +
+      '<div class="icons"><div><span><svg width="18" height="18" viewBox="0 0 18 18"><rect x="4" y="1.5" width="10" height="15" rx="2" fill="none" stroke="#fff" stroke-width="1.6"/><rect x="6.5" y="4" width="5" height="3" fill="#fff"/><circle cx="7" cy="10.5" r=".9" fill="#fff"/><circle cx="11" cy="10.5" r=".9" fill="#fff"/><circle cx="7" cy="13.2" r=".9" fill="#fff"/><circle cx="11" cy="13.2" r=".9" fill="#fff"/></svg></span>机身号登录</div><div><span><svg width="18" height="18" viewBox="0 0 18 18"><path d="M2.5 6.5 4 2.5h10l1.5 4" fill="none" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/><path d="M3.5 7v8.5h11V7" fill="none" stroke="#fff" stroke-width="1.6"/><rect x="7" y="10.5" width="4" height="5" fill="none" stroke="#fff" stroke-width="1.4"/></svg></span>商户号登录</div><div><span><svg width="18" height="18" viewBox="0 0 18 18"><rect x="1.5" y="3.5" width="15" height="11" rx="1.5" fill="none" stroke="#fff" stroke-width="1.6"/><circle cx="6" cy="8" r="1.6" fill="#fff"/><path d="M3.8 12.2c.5-1.5 3.9-1.5 4.4 0" fill="#fff"/><rect x="10" y="7" width="4.5" height="1.3" fill="#fff"/><rect x="10" y="9.8" width="3.5" height="1.3" fill="#fff"/></svg></span>证件号登录</div></div>' +
+      '<div class="lfoot"><div class="lagree"><i class="' + (S.agreed ? 'on' : '') + '" onclick="toggleAgree()"><svg width="8" height="8" viewBox="0 0 8 8"><path d="M1.5 4.2 3.3 6 6.6 2.4" fill="none" stroke="#fff" stroke-width="1.3"/></svg></i>我已阅读并同意<a>《立刷电签版服务协议》</a>和<a>《隐私权政策》</a></div><div class="ipv6">网站支持<b>IPv6</b></div></div></div>';
+  }},
+  register: { title:'注册', sub:'epass.jlpay.com', body:function(){
+    return '<div class="topnotice newmark" onclick="go(\'verify\')"><span>原立刷App用户快捷注册</span><span>›</span></div>' +
+      '<div class="grp"><h4>上传身份证</h4><div class="pics"><div class="pic">身份证人像面</div><div class="pic">身份证国徽面</div></div>' +
+      '<div class="list"><div class="row"><b>姓名</b><span>上传身份证照片后自动识别</span></div>' +
+      '<div class="row"><b>身份证号</b><span>上传身份证照片后自动识别</span></div></div></div>' +
+      '<div class="grp"><h4>上传结算卡</h4><div class="cardpic"><div class="pic">结算卡卡号面</div></div>' +
+      '<div class="list"><div class="row"><b>结算卡</b><span>上传结算卡照片后自动识别</span></div>' +
+      '<div class="row"><b>结算卡开户行</b><span>请选择 ›</span></div></div></div>' +
+      '<div class="grp"><h4>入网地址</h4><div class="infobar">请确保入网地址与交易地址一致，避免影响正常交易</div>' +
+      '<div class="list"><div class="row"><b>入网地区</b><span>广东省深圳市南山区</span></div>' +
+      '<div class="row"><b>详细地址</b><span>粤海街道高新南四道17号</span></div></div></div>' +
+      '<div class="btnflow"><button class="btn">完成注册</button>' +
+      '<div class="agree">我已阅读并同意《立刷电签版服务协议》和《隐私政策》</div>' +
+      '<div class="links">已有账户，<a>立即登录</a></div></div>';
+  }},
+  verify: { title:'原立刷App用户快捷注册', sub:'epass.jlpay.com', body:function(){
+    return '<div class="grp"><h4>原立刷App账号</h4><div class="list">' +
+      '<div class="row"><b>手机号码</b><input id="ipt-m" maxlength="11" placeholder="请输入原立刷App注册手机号"></div>' +
+      '<div class="row"><b>身份证号</b><input id="ipt-c" maxlength="4" placeholder="请输入身份证号后4位"></div>' +
+      '</div></div>' +
+      '<div class="btnbar"><button class="btn" onclick="submitVerify()">下一步</button></div>';
+  }},
+  idconfirm: { title:'原立刷App用户快捷注册', sub:'epass.jlpay.com', body:function(){
+    var exp = S.data === 'idexp' && !S.idFixed;
+    var cls = S.idFixed ? 'pic ok' : 'pic';
+    var txt = S.idFixed ? '已重新上传' : '点击重新上传';
+    return (exp ? '<div class="errbar">身份证已过期，请重新上传身份证照片</div>' : '') +
+      '<div class="grp"><h4>上传身份证</h4><div class="pics">' +
+      '<div class="' + cls + '" onclick="reupId()">身份证人像面<br>' + txt + '</div>' +
+      '<div class="' + cls + '" onclick="reupId()">身份证国徽面<br>' + txt + '</div></div>' +
+      '<div class="list"><div class="row"><b>姓名</b><span class="v">*三</span></div>' +
+      '<div class="row"><b>身份证号</b><span class="v">44**************13</span></div>' +
+      '<div class="row"><b>身份证有效期</b><span class="' + (exp ? 'bad' : 'v') + '">' +
+      (exp ? '2006.05.05-2016.05.05' : '2016.05.05-2036.05.05') + '</span></div></div></div>' +
+      '<div class="btnbar"><button class="btn" onclick="submitId()">下一步</button></div>';
+  }},
+  cardconfirm: { title:'入网信息确认', sub:'epass.jlpay.com', body:function(){
+    var bad = S.data === 'cardbad' && !S.cardFixed;
+    var none = S.data === 'nocard' && !S.cardFixed;
+    var pic = S.cardFixed ? '<div class="pic ok" onclick="reupCard()">已重新上传</div>'
+      : none ? '<div class="pic" onclick="reupCard()">上传结算卡卡号面</div>'
+      : '<div class="pic" onclick="reupCard()">点击重新上传<br>或更换结算卡</div>';
+    return '<div class="grp"><h4>入网结算卡</h4><div class="cardpic">' + pic + '</div>' +
+      (bad ? '<div class="errtxt">结算卡卡号面不符合要求，请重新上传</div>' : '') +
+      '<div class="list"><div class="row"><b>开户名称</b><span class="v">*三</span></div>' +
+      '<div class="row"><b>结算卡</b>' + (none ? '<span>上传结算卡照片后自动识别</span>' : '<span class="v">6214 **** **** 4877</span>') + '</div></div></div>' +
+      '<div class="grp"><h4>入网地址</h4><div class="infobar">请确保入网地址与交易地址一致，避免影响正常交易</div>' +
+      '<div class="list"><div class="row"><b>入网地区</b><span class="v">广东省深圳市南山区 ›</span></div>' +
+      '<div class="row"><b>详细地址</b><span class="v">粤海街道高新南四道17号</span></div></div></div>' +
+      '<div class="btnbar"><button class="btn" onclick="submitCard()">确认继续</button></div>';
+  }},
+  partner: { title:'存量用户快捷进件', app:true, body:function(){
+    var isApp = S.ptype === 'app';
+    return '<div class="acard">' +
+      '<div class="row" onclick="pickType()" style="cursor:pointer"><b>用户原账户类型</b><span class="v">' + (isApp ? '立刷App' : '立刷电签') + ' ›</span></div>' +
+      (isApp ? '<div class="row"><b>手机号码</b><input id="pt-m" maxlength="11" placeholder="请输入原立刷App注册手机号"></div>' +
+               '<div class="row modfield"><b>身份证号</b><input id="pt-c" maxlength="4" placeholder="请输入身份证号后4位"></div>'
+             : '<div class="row"><b>身份证号</b><input id="pt-c" maxlength="18" placeholder="请输入身份证号"></div>') +
+      '</div>' +
+      '<div class="btnbar"><button class="btn" onclick="submitPartner()">去注册</button>' +
+      '<div class="anote"><i></i>我们将收集身份证号用于身份验证，同时保障信息安全。</div></div>';
+  }},
+  pnext: { title:'存量用户快捷进件', app:true, body:function(){
+    return '<div class="holder">与原有逻辑相同，进入下一步操作</div>';
+  }},
+  next: { title:'门店认证', sub:'epass.jlpay.com', body:function(){
+    return '<div class="holder">与原有逻辑相同，进入门店认证</div>';
+  }},
+  dsreg: { title:'原立刷App用户快捷注册', sub:'epass.jlpay.com', body:function(){
+    return '<div class="holder">与合伙人App现有逻辑相同</div>';
+  }}
+};
+
+function render(){
+  var name = cur(), def = P[name], atStart = S.stack.length <= 1;
+  document.getElementById('nav').innerHTML =
+    '<span class="lbtns"><b class="' + (atStart?'off':'') + '" onclick="back()">‹</b>' +
+    (def.app ? '' : '<b class="' + (atStart?'off':'') + '" onclick="close_()">✕</b>') + '</span>' + def.title +
+    (def.sub ? '<small>' + def.sub + '</small>' : '');
+  document.getElementById('sc').innerHTML = def.body();
+  var tabs = document.querySelectorAll('.tab'), cards = document.querySelectorAll('.pcard');
+  for (var i=0;i<tabs.length;i++) tabs[i].classList.toggle('on', tabs[i].getAttribute('data-p') === name);
+  var shown = false;
+  for (var j=0;j<cards.length;j++){ var on = cards[j].getAttribute('data-p') === name; cards[j].classList.toggle('on', on); shown = shown || on; }
+  if (!shown) for (var k=0;k<cards.length;k++) cards[k].classList.toggle('on', cards[k].getAttribute('data-p') === S.stack[S.stack.length-2]);
+}
+function go(name){ S.stack.push(name); render(); }
+function back(){ if (S.stack.length > 1){ S.stack.pop(); render(); } }
+function close_(){ S.stack = [S.stack[0]]; render(); }
+function jump(p){ S.stack = PATHS[p].slice(); S.idFixed = false; S.cardFixed = false; S.ptype = 'app'; S.agreed = false; render(); }
+
+function toggleAgree(){ S.agreed = !S.agreed; render(); }
+function needAgree(to){
+  if (S.agreed) { go(to); return; }
+  var sc = document.getElementById('sc'), m = document.createElement('div');
+  m.className = 'mask center';
+  m.innerHTML = '<div class="dlg"><h5>温馨提示</h5><p>请阅读并勾选同意<a>《立刷电签版服务协议》</a>和<a>《隐私权政策》</a>后进行下一步操作</p>' +
+    '<div class="acts"><button data-k="no">取消</button><button data-k="ok">同意并继续</button></div></div>';
+  m.querySelector('[data-k=no]').onclick = function(){ m.remove(); };
+  m.querySelector('[data-k=ok]').onclick = function(){ m.remove(); S.agreed = true; go(to); };
+  sc.appendChild(m);
+}
+function toast(txt){
+  var sc = document.getElementById('sc'), old = sc.querySelector('.toast');
+  if (old) old.remove();
+  var d = document.createElement('div'); d.className = 'toast'; d.textContent = txt;
+  sc.appendChild(d); setTimeout(function(){ if (d.parentNode) d.remove(); }, 2400);
+}
+
+function submitVerify(){
+  var m = document.getElementById('ipt-m').value, c = document.getElementById('ipt-c').value;
+  if (!/^\d{11}$/.test(m)) { toast('请输入正确的手机号码'); return; }
+  if (!/^[0-9Xx]{4}$/.test(c)) { toast('请输入身份证号后4位'); return; }
+  if (S.acct === 'none') { toast('账号不存在'); return; }
+  if (S.acct === 'bad')  { toast('身份证验证有误'); return; }
+  if (S.acct === 'ds')   { go('dsreg'); return; }
+  if (S.data === 'nodata') { toast('未查到原立刷app资料，请用其他方式注册'); return; }
+  go('idconfirm');
+}
+function pickType(){
+  var sc = document.getElementById('sc'), m = document.createElement('div');
+  m.className = 'mask'; m.style.alignItems = 'flex-end';
+  m.innerHTML = '<div class="sheet"><div data-v="ds">立刷电签</div><div data-v="app">立刷App</div><div class="gap" data-v="">取消</div></div>';
+  var opts = m.querySelectorAll('[data-v]');
+  for (var i=0;i<opts.length;i++) opts[i].onclick = function(){ var v = this.getAttribute('data-v'); m.remove(); if (v) { S.ptype = v; render(); } };
+  sc.appendChild(m);
+}
+function submitPartner(){
+  var c = document.getElementById('pt-c').value;
+  if (S.ptype === 'app') {
+    var m = document.getElementById('pt-m').value;
+    if (!/^\d{11}$/.test(m)) { toast('请输入正确的手机号码'); return; }
+    if (!/^[0-9Xx]{4}$/.test(c)) { toast('请输入身份证号后4位'); return; }
+    if (S.acct === 'none') { toast('账号不存在'); return; }
+    if (S.acct === 'bad')  { toast('身份证验证有误'); return; }
+  }
+  go('pnext');
+}
+function reupId(){ S.idFixed = true; render(); }
+function submitId(){
+  if (S.data === 'idexp' && !S.idFixed) { toast('身份证已过期，请重新上传身份证照片'); return; }
+  go('cardconfirm');
+}
+function reupCard(){ S.cardFixed = true; render(); }
+function submitCard(){
+  if (S.data === 'cardbad' && !S.cardFixed) { toast('结算卡卡号面不符合要求，请重新上传'); return; }
+  if (S.data === 'nocard' && !S.cardFixed) { toast('请上传结算卡照片'); return; }
+  go('next');
+}
+
+var tabs = document.querySelectorAll('.tab');
+for (var t=0;t<tabs.length;t++) tabs[t].onclick = (function(p){ return function(){ jump(p); }; })(tabs[t].getAttribute('data-p'));
+renderBars(); render();
+</script>
+</body>
+</html>
