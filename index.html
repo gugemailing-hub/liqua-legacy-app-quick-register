@@ -98,6 +98,11 @@
   .sheet{width:100%;background:#fff;border-radius:12px 12px 0 0;overflow:hidden}
   .sheet div{text-align:center;padding:13px 0;border-bottom:1px solid #f2f3f5;font-size:14px;cursor:pointer}
   .sheet div.gap{border-top:6px solid #f2f3f5}
+  .dlg{align-self:center;width:78%;background:#fff;border-radius:10px;overflow:hidden;text-align:center}
+  .dlg p{margin:0;padding:22px 18px;font-size:14px;line-height:1.6}
+  .dlg .ops{display:flex;border-top:1px solid #f2f3f5}
+  .dlg .ops b{flex:1;padding:12px 0;font-size:15px;font-weight:400;cursor:pointer}
+  .dlg .ops b+b{border-left:1px solid #f2f3f5;color:var(--blue)}
   .holder{padding:150px 24px;text-align:center;font-size:15px;color:var(--sub)}
 
   .card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin-bottom:16px}
@@ -118,7 +123,7 @@
 
 <header>
   <h1>原立刷App用户公众号快捷注册电签 · 交互原型</h1>
-  <p>V0.12 ｜ 2026/10/27</p>
+  <p>V0.13 ｜ 2026/10/27</p>
 </header>
 
 <div class="tabs">
@@ -174,7 +179,7 @@
       <table>
         <tr><th>项</th><th>说明</th></tr>
         <tr><td>复用</td><td>合伙人App「存量用户快捷进件」选「立刷App」的校验逻辑与提示</td></tr>
-        <tr><td>差异</td><td>1、不展示「用户原账户类型」，身份证号输后4位<br>2、通过但无原立刷资料 → 提示「未查到原立刷app资料，请用其他方式注册」，停留本页</td></tr>
+        <tr><td>差异</td><td>1、不展示「用户原账户类型」，身份证号输后4位<br>2、通过但无原立刷资料 → 提示「未查到原立刷app资料，请用其他方式注册」，停留本页<br>3、已注册电签 → 不跳重复入网，弹窗「您已注册过电签商户，请登录后在首页点【新增门店】办理」：【取消】停留本页，【去登录】进入登录页（合伙人App不变）</td></tr>
       </table>
     </div>
 
@@ -304,8 +309,8 @@ var P = {
   next: { title:'门店认证', sub:'epass.jlpay.com', body:function(){
     return '<div class="holder">与原有逻辑相同，进入门店认证</div>';
   }},
-  dsreg: { title:'原立刷App用户快捷注册', sub:'epass.jlpay.com', body:function(){
-    return '<div class="holder">与合伙人App现有逻辑相同</div>';
+  login: { title:'登录', sub:'epass.jlpay.com', body:function(){
+    return '<div class="holder">现有登录页，不改</div>';
   }}
 };
 
@@ -340,9 +345,18 @@ function submitVerify(){
   if (!/^[0-9Xx]{4}$/.test(c)) { toast('（沿用现有提示）'); return; }
   if (S.acct === 'none') { toast('账号不存在'); return; }
   if (S.acct === 'bad')  { toast('身份证验证有误'); return; }
-  if (S.acct === 'ds')   { go('dsreg'); return; }
+  if (S.acct === 'ds')   { dsDialog(); return; }
   if (S.data === 'nodata') { toast('未查到原立刷app资料，请用其他方式注册'); return; }
   go('idconfirm');
+}
+function dsDialog(){
+  var sc = document.getElementById('sc'), m = document.createElement('div');
+  m.className = 'mask';
+  m.innerHTML = '<div class="dlg"><p>您已注册过电签商户，请登录后在首页点【新增门店】办理</p><div class="ops"><b>取消</b><b>去登录</b></div></div>';
+  var ops = m.querySelectorAll('.ops b');
+  ops[0].onclick = function(){ m.remove(); };
+  ops[1].onclick = function(){ m.remove(); go('login'); };
+  sc.appendChild(m);
 }
 function pickType(){
   var sc = document.getElementById('sc'), m = document.createElement('div');
