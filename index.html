@@ -118,7 +118,7 @@
 
 <header>
   <h1>原立刷App用户公众号快捷注册电签 · 交互原型</h1>
-  <p>V0.11 ｜ 2026/10/27</p>
+  <p>V0.12 ｜ 2026/10/27</p>
 </header>
 
 <div class="tabs">
@@ -262,7 +262,7 @@ var P = {
     var exp = S.data === 'idexp' && !S.idFixed;
     var cls = S.idFixed ? 'pic ok' : 'pic';
     var txt = S.idFixed ? '已重新上传' : '点击重新上传';
-    return (exp ? '<div class="errbar">身份证已过期，请重新上传身份证照片</div>' : '') +
+    return (exp ? '<div class="errbar">（沿用现有提示）</div>' : '') +
       '<div class="grp"><h4>上传身份证</h4><div class="pics">' +
       '<div class="' + cls + '" onclick="reupId()">身份证人像面<br>' + txt + '</div>' +
       '<div class="' + cls + '" onclick="reupId()">身份证国徽面<br>' + txt + '</div></div>' +
@@ -336,8 +336,8 @@ function toast(txt){
 
 function submitVerify(){
   var m = document.getElementById('ipt-m').value, c = document.getElementById('ipt-c').value;
-  if (!/^\d{11}$/.test(m)) { toast('请输入正确的手机号码'); return; }
-  if (!/^[0-9Xx]{4}$/.test(c)) { toast('请输入身份证号后4位'); return; }
+  if (!/^\d{11}$/.test(m)) { toast('（沿用现有提示）'); return; }
+  if (!/^[0-9Xx]{4}$/.test(c)) { toast('（沿用现有提示）'); return; }
   if (S.acct === 'none') { toast('账号不存在'); return; }
   if (S.acct === 'bad')  { toast('身份证验证有误'); return; }
   if (S.acct === 'ds')   { go('dsreg'); return; }
@@ -356,8 +356,8 @@ function submitPartner(){
   var c = document.getElementById('pt-c').value;
   if (S.ptype === 'app') {
     var m = document.getElementById('pt-m').value;
-    if (!/^\d{11}$/.test(m)) { toast('请输入正确的手机号码'); return; }
-    if (!/^[0-9Xx]{4}$/.test(c)) { toast('请输入身份证号后4位'); return; }
+    if (!/^\d{11}$/.test(m)) { toast('（沿用现有提示）'); return; }
+    if (!/^[0-9Xx]{4}$/.test(c)) { toast('（沿用现有提示）'); return; }
     if (S.acct === 'none') { toast('账号不存在'); return; }
     if (S.acct === 'bad')  { toast('身份证验证有误'); return; }
   }
@@ -365,13 +365,13 @@ function submitPartner(){
 }
 function reupId(){ S.idFixed = true; render(); }
 function submitId(){
-  if (S.data === 'idexp' && !S.idFixed) { toast('身份证已过期，请重新上传身份证照片'); return; }
+  if (S.data === 'idexp' && !S.idFixed) { toast('（沿用现有提示）'); return; }
   go('cardconfirm');
 }
 function reupCard(){ S.cardFixed = true; render(); }
 function submitCard(){
   if (S.data === 'cardbad' && !S.cardFixed) { toast('结算卡卡号面不符合要求，请重新上传'); return; }
-  if (S.data === 'nocard' && !S.cardFixed) { toast('请上传结算卡照片'); return; }
+  if (S.data === 'nocard' && !S.cardFixed) { toast('（沿用现有提示）'); return; }
   go('next');
 }
 
